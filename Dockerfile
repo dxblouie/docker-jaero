@@ -209,7 +209,7 @@ grep "data_rate" /root/sdr.conf | while read line; do
      sed -i "s/comboBoxlbw.*/comboBoxlbw=1/" "JAERO [VFO$i].conf";
    fi
    if [ "$JAERO_LOGGING" == "true" ]; then
-      jaero -s VFO$i 2>&1 | stdbuf -o0 awk '{print "[JAERO] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
+      jaero -s VFO$i 2>&1 | awk -W interactive '{print "[JAERO] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
    else
       jaero -s VFO$i > /dev/null 2>&1 &
    fi
@@ -218,14 +218,14 @@ done;
 # Play ACARS logs on stdout
 if [ "$JAERO_ACARS_LOGGING" == "true" ]; then
    CURRENTLOGFILE=`date "+acars-log-%y-%m-%d.txt"`
-   tail -F $CURRENTLOGFILE 2>/dev/null | stdbuf -o0 awk '{print "[ACARS] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
+   tail -F $CURRENTLOGFILE 2>/dev/null | awk -W interactive '{print "[ACARS] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
    TAILPID=$!
    while true; do
       NEWLOGFILE=`ls -t \`date "+acars-log-%y-%m-%d.txt"\` 2>/dev/null |head -n1 2>/dev/null`
       if [[ "$NEWLOGFILE" != "$CURRENTLOGFILE" ]]; then
          kill $TAILPID 2>/dev/null
          CURRENTLOGFILE=$NEWLOGFILE
-         tail -F $CURRENTLOGFILE 2>/dev/null | stdbuf -o0 awk '{print "[ACARS] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
+         tail -F $CURRENTLOGFILE 2>/dev/null | awk -W interactive '{print "[ACARS] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
          TAILPID=$!
       fi
       sleep 60
@@ -234,7 +234,7 @@ fi
 
 # Launch SDRReceiver
 if [ "$SDRRECEIVER_LOGGING" == "true" ]; then
-   SDRReceiver -s /root/sdr.conf 2>&1 | stdbuf -o0 awk '{print "[SDRReceiver] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}'
+   SDRReceiver -s /root/sdr.conf 2>&1 | awk -W interactive '{print "[SDRReceiver] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}'
 else
    SDRReceiver -s /root/sdr.conf > /dev/null 2>&1
 fi
