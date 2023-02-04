@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  jaero:
+    image: docker-jaero
+    container_name: jaero
+    hostname: jaero
+    tty: true
+    restart: unless-stopped
+    devices:
+      - /dev/bus/usb
+    ports:
+        - ${NOVNC_PORT}:${NOVNC_PORT}
+    environment:
+        - JAERO_DEVICE_SERIAL=${JAERO_DEVICE_SERIAL}
+        - JAERO_FEEDER_ID=${JAERO_FEEDER_ID}
+        - JAERO_SDR_GAIN=${JAERO_SDR_GAIN}
+        - JAERO_SDR_SAMPLERATE=${JAERO_SDR_SAMPLERATE}
+        - JAERO_INJEST_HOST=${JAERO_INJEST_HOST}
+        - JAERO_INJEST_PORT=${JAERO_INJEST_PORT}
+        - JAERO_LOGGING=${JAERO_LOGGING}
+        - SDRRECEIVER_LOGGING=${SDRRECEIVER_LOGGING}
+        - JAERO_ACARS_LOGGING=${JAERO_ACARS_LOGGING}
+        - VNC_RESOLUTION=${VNC_RESOLUTION}
+        - VNC_PASSWORD=${VNC_PASSWORD}
+        - NOVNC_PORT=${NOVNC_PORT}
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: [
+      "/root/docker-entrypoint.sh"
+    ]
