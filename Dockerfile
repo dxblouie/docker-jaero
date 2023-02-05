@@ -218,14 +218,14 @@ done;
 # Play ACARS logs on stdout
 if [ "$JAERO_ACARS_LOGGING" == "true" ]; then
    CURRENTLOGFILE=`date "+acars-log-%y-%m-%d.txt"`
-   tail -F $CURRENTLOGFILE 2>/dev/null | awk -W interactive '{print "[ACARS] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
+   tail -F /var/log/jaero/$CURRENTLOGFILE 2>/dev/null | awk -W interactive '{print "[ACARS] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
    TAILPID=$!
    while true; do
       NEWLOGFILE=`ls -t \`date "+acars-log-%y-%m-%d.txt"\` 2>/dev/null |head -n1 2>/dev/null`
       if [[ "$NEWLOGFILE" != "$CURRENTLOGFILE" ]]; then
          kill $TAILPID 2>/dev/null
          CURRENTLOGFILE=$NEWLOGFILE
-         tail -F $CURRENTLOGFILE 2>/dev/null | awk -W interactive '{print "[ACARS] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
+         tail -F /var/log/jaero/$CURRENTLOGFILE 2>/dev/null | awk -W interactive '{print "[ACARS] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}' &
          TAILPID=$!
       fi
       sleep 60
